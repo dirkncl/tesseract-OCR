@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  </head>
+  <body>
+    <input type="file" id="uploader">
+    <script>
+      var ol = /^h/.test(document.location);
+      if (ol) {
+         loadScript("js/tesseract.min.js")
+      }
+      else {
+        loadScript("js/fetch.js")
+        loadScript("js/tesseract.min.js")
+      }
+      const recognize = function(evt){
+        const files = evt.target.files;
+        let worker;
+        if (ol) {
+        worker = Tesseract.createWorker({
+            /*
+             * As Edge don't support webassembly,
+             * here we force to use asm.js version.
+             */
+              workerPath: './js/worker.min.js',
+              langPath: '../../lang-tess/4.0.0',
+        
+            corePath: './core/2.2.0/tesseract-core.asm.js',
+            logger: function(m){console.log(m);},
+            /*
+             * As there is no indexedDB in earlier version
+             * of Edge, here we disable cache.
+             */
+            cacheMethod: 'none',
+          });
+        }
+        else {
+        worker = Tesseract.createWorker({
+            /*
+             * As Edge don't support webassembly,
+             * here we force to use asm.js version.
+             */
+              workerPath: './js/worker.min.js',
+              langPath: 'https://dirkncl.github.io/lang-tess/4.0.0',
+        
+            corePath: './core/2.2.0/tesseract-core.asm.js',
+            logger: function(m){console.log(m);},
+            /*
+             * As there is no indexedDB in earlier version
+             * of Edge, here we disable cache.
+             */
+            cacheMethod: 'none',
+          });
+        }
+
+        
+        
+        Promise.resolve()
+          .then(() => worker.load())
+          .then(() => worker.loadLanguage('eng'))
+          .then(() => worker.initialize('eng'))
+          .then(() => worker.recognize(files[0]))
+          .then((ret) => {
+            console.log(ret.data.text);
+          });
+      }
+      const elm = document.getElementById('uploader');
+      elm.addEventListener('change', recognize);
+      function loadScript(file){
+        var scripts = new XMLHttpRequest();
+        scripts.overrideMimeType('text/plain; charset=utf-8');
+        scripts.open("GET", file, true);
+        scripts.onload = function () {
+          var ScriptBuff = (scripts.responseText);
+             eval.apply( null, [ScriptBuff]);
+        }
+        scripts.send(null);
+      };
+
+    </script>
+  </body>
+</html>

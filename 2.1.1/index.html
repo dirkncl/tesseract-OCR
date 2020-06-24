@@ -1,0 +1,280 @@
+<html>
+  <head>
+  <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+  <title>Experiment: Tesseract-2.1.1 </title>
+  </head>
+  <body bkground="gray">
+   <div id='imgHolder' style="position:absolute;right:0"><img name='image' id='image' height="250px;" title='Contoh Gambar'/> </div>  
+ 
+    <div style="position:absolute;">
+      <select id="langsel" onchange="window.lastFile && recognizeFile(window.lastFile)">
+        <option value='afr'     > Afrikaans             </option>
+        <option value='ara'     > Arabic                </option>
+        <option value='aze'     > Azerbaijani           </option>
+        <option value='bel'     > Belarusian            </option>
+        <option value='ben'     > Bengali               </option>
+        <option value='bul'     > Bulgarian             </option>
+        <option value='cat'     > Catalan               </option>
+        <option value='ces'     > Czech                 </option>
+        <option value='chi_sim' > Chinese               </option>
+        <option value='chi_tra' > Traditional Chinese   </option>
+        <option value='chr'     > Cherokee              </option>
+        <option value='dan'     > Danish                </option>
+        <option value='deu'     > German                </option>
+        <option value='ell'     > Greek                 </option>
+        <option value='eng'     selected> English       </option>
+        <option value='enm'     > English (Old)         </option>
+        <option value='meme'    > Internet Meme         </option>
+        <option value='epo'     > Esperanto             </option>
+        <option value='epo_alt' > Esperanto alternative </option>
+        <option value='equ'     > Math                  </option>
+        <option value='est'     > Estonian              </option>
+        <option value='eus'     > Basque                </option>
+        <option value='fin'     > Finnish               </option>
+        <option value='fra'     > French                </option>
+        <option value='frk'     > Frankish              </option>
+        <option value='frm'     > French (Old)          </option>
+        <option value='glg'     > Galician              </option>
+        <option value='grc'     > Ancient Greek         </option>
+        <option value='heb'     > Hebrew                </option>
+        <option value='hin'     > Hindi                 </option>
+        <option value='hrv'     > Croatian              </option>
+        <option value='hun'     > Hungarian             </option>
+        <option value='ind'     > Indonesian            </option>
+        <option value='isl'     > Icelandic             </option>
+        <option value='ita'     > Italian               </option>
+        <option value='ita_old' > Italian (Old)         </option>
+        <option value='jpn'     > Japanese              </option>
+        <option value='kan'     > Kannada               </option>
+        <option value='kor'     > Korean                </option>
+        <option value='lav'     > Latvian               </option>
+        <option value='lit'     > Lithuanian            </option>
+        <option value='mal'     > Malayalam             </option>
+        <option value='mkd'     > Macedonian            </option>
+        <option value='mlt'     > Maltese               </option>
+        <option value='msa'     > Malay                 </option>
+        <option value='nld'     > Dutch                 </option>
+        <option value='nor'     > Norwegian             </option>
+        <option value='pol'     > Polish                </option>
+        <option value='por'     > Portuguese            </option>
+        <option value='ron'     > Romanian              </option>
+        <option value='rus'     > Russian               </option>
+        <option value='slk'     > Slovakian             </option>
+        <option value='slv'     > Slovenian             </option>
+        <option value='spa'     > Spanish               </option>
+        <option value='spa_old' > Old Spanish           </option>
+        <option value='sqi'     > Albanian              </option>
+        <option value='srp'     > Serbian (Latin)       </option>
+        <option value='swa'     > Swahili               </option>
+        <option value='swe'     > Swedish               </option>
+        <option value='tam'     > Tamil                 </option>
+        <option value='tel'     > Telugu                </option>
+        <option value='tgl'     > Tagalog               </option>
+        <option value='tha'     > Thai                  </option>
+        <option value='tur'     > Turkish               </option>
+        <option value='ukr'     > Ukrainian             </option>
+        <option value='vie'     > Vietnamese            </option>
+      </select>
+      
+      <button id="sample">Sample Image</button>
+      
+      <button title="Open local file"><label for="ofile">Open File</label></button>
+      <input id="ofile" type="file" style="display:none">
+      
+      <button id="save" onclick='saveFile(this)' title='Save File'>Save File</button>
+      
+      <div id='TextareaHolder'></div>
+      
+      <div id="log" style="display:"></div>
+    </div>
+    
+    <style>
+    #log > div {
+        color: #313131;
+        border-top: 1px solid #dadada;
+        padding: 9px;
+        display: flex;
+    }
+    #log > div:first-child {
+        border: 0;
+    }
+    
+    .status {
+    	min-width: 250px;
+    }
+    #log {
+        border: 1px solid #dadada;
+        padding: 10px;
+        margin-top: 20px;
+        min-height: 100px;
+    }
+    body {
+        font-family: sans-serif;
+        margin: 30px;
+    }
+    
+    progress {
+        display: block;
+        width: 10%;
+        transition: opacity 0.5s linear;
+    }
+    progress[value="1"] {
+        opacity: 0.5;
+    }
+    </style>
+    <script>
+
+var ol = /^h/.test(document.location);
+if (ol) {
+   loadScript("js/tesseract.min.js")
+}
+else {
+  loadScript("js/fetch.js")
+  loadScript("js/tesseract.min.js")
+}
+
+var namaFile="";
+namaFile = "img/eng_bw.png";
+document.getElementById("image").src = namaFile;
+
+document.getElementById("sample").onclick = function(){
+  namaFile = "img/eng_bw.png";
+  dispImgUrl(namaFile);
+  document.getElementById('TextareaHolder').innerHTML = '';
+  document.getElementById('log').style.display='block'  
+  recognizeFile(namaFile)
+}
+
+document.getElementById("ofile").onchange = function(){
+  dispImgLocal(this);
+  document.getElementById('TextareaHolder').innerHTML = '';
+  document.getElementById('log').style.display='block';
+  recognizeFile(window.lastFile=this.files[0])
+}
+
+function dispImgUrl(url) {
+  var gambarPilihan=document.createElement('img');
+  gambarPilihan.setAttribute("height","250px");
+  gambarPilihan.setAttribute("title","Default Image");
+  gambarPilihan.src=url;
+  document.getElementById('imgHolder').innerHTML='';
+  document.getElementById('imgHolder').appendChild(gambarPilihan);
+}
+
+function progressUpdate(packet){
+	var log = document.getElementById('log');
+	if(log.firstChild && log.firstChild.status === packet.status){
+		if('progress' in packet){
+			var progress = log.firstChild.querySelector('progress')
+			progress.value = packet.progress
+		}
+	}
+  else{
+		var line = document.createElement('div');
+		line.status = packet.status;
+		var status = document.createElement('div')
+		status.className = 'status'
+		status.appendChild(document.createTextNode(packet.status))
+		line.appendChild(status)
+
+		if('progress' in packet){
+			var progress = document.createElement('progress')
+			progress.value = packet.progress
+			progress.max = 1
+			line.appendChild(progress)
+		}
+		if(packet.status == 'done'){
+			var textarea = document.createElement('textarea');
+      textarea.id='ocrtxt';
+      textarea.title='Text result';
+      textarea.style.width='680px';
+      textarea.style.height='300px';
+      textarea.onclick=log.style.display='none';
+			textarea.appendChild(document.createTextNode(packet.data.data.text))
+			line.innerHTML = ''
+      document.getElementById('TextareaHolder').innerHTML = ''
+      document.getElementById('TextareaHolder').appendChild(textarea)
+		}
+		log.insertBefore(line, log.firstChild);
+    
+	}
+  
+}
+
+function dispImgLocal(e) {
+  if (FileReader && e.files && e.files.length) {
+    namaFile=e.files[0].name;
+    var fr = new FileReader();
+    fr.onload = function() {
+      var gambarPilihan=document.createElement('img');
+      gambarPilihan.setAttribute("height","250px");
+      gambarPilihan.setAttribute("title","Image to Select");
+      gambarPilihan.src=fr.result;
+      document.getElementById('imgHolder').innerHTML='';
+      document.getElementById('imgHolder').appendChild(gambarPilihan);
+    }
+    fr.readAsDataURL(e.files[0]);
+  }
+};
+
+async function recognizeFile(file) {
+	document.getElementById("log").innerHTML = ''
+  
+  const corePath = window.navigator.userAgent.indexOf("Edge") > -1? './core/2.2.0/tesseract-core.asm.js':'./core/2.2.0/tesseract-core.wasm.js';
+
+  const lang = document.getElementById('langsel').value
+  let data;
+   if (ol) {
+      data = await Tesseract.recognize(file, lang, {
+        workerPath: './js/worker.min.js',
+        langPath: '../../lang-tess/4.0.0',
+        corePath,
+        logger: progressUpdate,
+      })
+    }
+    else {
+      data = await Tesseract.recognize(file, lang, {
+        workerPath: './js/worker.min.js',
+        langPath: 'https://dirknc.github.io/lang-tess/4.0.0',
+        corePath,
+        logger: progressUpdate,
+      });
+    }
+
+  progressUpdate({ status: 'done', data });
+}
+function writeFile(file_name, text) {
+  var anch = document.createElement('a');
+  anch.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  anch.setAttribute('download', file_name);
+
+  anch.style.display = 'none';
+  document.body.appendChild(anch);
+
+  anch.click();
+  document.body.removeChild(anch);
+  
+}
+function saveFile() {
+  var text = document.getElementById("ocrtxt").value;
+  var filename = namaFile;
+  var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  writeFile(filename + ".txt", blob)
+  
+};
+
+function loadScript(file){
+  var scripts = new XMLHttpRequest();
+  scripts.overrideMimeType('text/plain; charset=utf-8');
+  scripts.open("GET", file, true);
+  scripts.onload = function () {
+    var ScriptBuff = (scripts.responseText);
+       eval.apply( null, [ScriptBuff]);
+  }
+  scripts.send(null);
+};
+
+    </script>
+
+</body>
+</html>

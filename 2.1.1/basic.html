@@ -1,0 +1,54 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <input type="file" id="uploader">
+    <script>
+      var ol = /^h/.test(document.location);
+      if (ol) {
+         loadScript("js/tesseract.min.js")
+      }
+      else {
+        loadScript("js/fetch.js")
+        loadScript("js/tesseract.min.js")
+      }
+
+      let opt = {};
+      if (ol) {
+      
+         opt.workerPath = './js/worker.min.js';
+         opt.langPath = '../../lang-tess/4.0.0';
+      
+         opt.corePath = './core/2.2.0/tesseract-core.wasm.js';
+         opt.logger = m => console.log(m)
+      }
+      else {
+         opt.workerPath= './js/worker.min.js';
+         langPath= 'https://dirkncl.github.io/lang-tess/4.0.0';
+         opt.corePath= './core/2.2.0/tesseract-core.wasm.js';
+         opt.logger= m => console.log(m)
+      }
+      
+    
+      const recognize = async ({ target: { files }  }) => {
+       const { data: { text } } = await Tesseract.recognize(files[0], 'eng', opt);
+       
+       console.log(text);
+      }
+      
+      const elm = document.getElementById('uploader');
+      elm.addEventListener('change', recognize);
+      function loadScript(file){
+        var scripts = new XMLHttpRequest();
+        scripts.overrideMimeType('text/plain; charset=utf-8');
+        scripts.open("GET", file, true);
+        scripts.onload = function () {
+          var ScriptBuff = (scripts.responseText);
+             eval.apply( null, [ScriptBuff]);
+        }
+        scripts.send(null);
+      };      
+      
+    </script>
+  </body>
+</html>
