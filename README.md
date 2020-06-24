@@ -17,3 +17,5 @@ https://dirkncl.github.io/tesseract-OCR/2.1.1/download-pdf.html
 
 https://dirkncl.github.io/tesseract-OCR/2.1.1/index.html
 
+[![Screenshot](https://dirkncl.github.io/tesseract-OCR/screenshoot.png)](https://dirkncl.github.io/tesseract-OCR/2.1.1/index.html)
+
